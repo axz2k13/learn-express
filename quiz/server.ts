@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import exp from 'constants';
 
 interface User {
   id: number;
@@ -62,6 +63,19 @@ app.post('/write/adduser', (req: UserRequest, res: Response) => {
   });
   res.send('done');
 });
+
+app.use("/read/username", addMsgToRequest)
+app.get("/read/username/:name", (req: UserRequest, res: Response) => {
+  let name = req.params.name
+  req.users?.forEach((user) => {
+    if(user.username === name) {
+      res.send(user.email)
+    }
+  })
+  res.send({
+    error: {message: `${name} not found`, status: 404}
+  })
+})
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
